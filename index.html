@@ -59,6 +59,11 @@
           hls.attachMedia(video);
           hls.on(Hls.Events.MEDIA_ATTACHED, function () {
             console.log("video and hls.js are now bound together !");
+
+            if (input.value.endsWith("index.m3u8")) {
+              input.value = input.value + "index.m3u8";
+            }
+
             hls.loadSource(input.value);
             hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
               console.log(
