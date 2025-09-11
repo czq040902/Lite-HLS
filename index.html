@@ -29,7 +29,7 @@
     <style>
       video {
         width: 100%;
-        margin-top: 0.8em;
+        margin-top: 1.4em;
       }
     </style>
   </head>
@@ -54,6 +54,7 @@
 
         var hls = new Hls();
         play.addEventListener("click", function () {
+          if (!input.value) return;
           hls.attachMedia(video);
           hls.on(Hls.Events.MEDIA_ATTACHED, function () {
             console.log("video and hls.js are now bound together !");
