@@ -38,7 +38,8 @@
     <main>
       <section>
         <input id="input" type="text">
-        <button id="button">play video</button>
+        <button id="attachMedia">play video</button>
+        <button id="detachMedia">pause video</button>
         <video id="video" controls autoplay></video>
       </section>
     </main>
@@ -48,10 +49,11 @@
       if (Hls.isSupported()) {
         var video = document.getElementById("video");
         var input = document.getElementById("input");
-        var button = document.getElementById("button");
+        var play = document.getElementById("attachMedia");
+        var pause = document.getElementById("detachMedia");
 
-        button.addEventListener("click", function () {
-          var hls = new Hls();
+        var hls = new Hls();
+        play.addEventListener("click", function () {
           hls.attachMedia(video);
           hls.on(Hls.Events.MEDIA_ATTACHED, function () {
             console.log("video and hls.js are now bound together !");
@@ -63,6 +65,10 @@
               );
             });
           });
+        });
+
+        pause.addEventListener("click", function () {
+          hls.detachMedia(video);
         });
       }
     </script>
