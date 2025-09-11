@@ -61,7 +61,7 @@
             console.log("video and hls.js are now bound together !");
 
             let url = "";
-            if (input.value.endsWith("index.m3u8")) {
+            if (!input.value.endsWith("index.m3u8")) {
               url = input.value + "index.m3u8";
             }
 
