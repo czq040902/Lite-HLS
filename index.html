@@ -60,11 +60,12 @@
           hls.on(Hls.Events.MEDIA_ATTACHED, function () {
             console.log("video and hls.js are now bound together !");
 
+            let url = "";
             if (input.value.endsWith("index.m3u8")) {
-              input.value = input.value + "index.m3u8";
+              url = input.value + "index.m3u8";
             }
 
-            hls.loadSource(input.value);
+            hls.loadSource(url);
             hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
               console.log(
                 "manifest loaded, found " + data.levels.length +
