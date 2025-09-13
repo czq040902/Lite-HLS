@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello, Deno</title>
+    <title>18 禁 超级大黄片，女士快跑</title>
+    <meta name="description" content="给你所有幻想！！"/>
     <link
       rel="preload"
       href="https://demo-styles.deno.deno.net/fonts/Moranga-Regular.woff2"
@@ -37,48 +38,11 @@
   <body>
     <main>
       <section>
-        <h2>在线预览 m3u8 资源</h2>
-        <input id="input" type="text">
-        <button id="attachMedia">play video</button>
-        <button id="detachMedia">pause video</button>
-        <video id="video" controls autoplay></video>
+        <h2 style="font-weight: 56px;">社会主义核心价值观</h2>
+        <p style="font-size: 24px;">
+          富强、民主、文明、和谐、自由、平等、公正、法治、爱国、敬业、诚信、友善
+        </p>
       </section>
     </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script>
-      if (Hls.isSupported()) {
-        var video = document.getElementById("video");
-        var input = document.getElementById("input");
-        var play = document.getElementById("attachMedia");
-        var pause = document.getElementById("detachMedia");
-
-        var hls = new Hls();
-        play.addEventListener("click", function () {
-          if (!input.value) return;
-          hls.attachMedia(video);
-          hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-            console.log("video and hls.js are now bound together !");
-
-            // let url = "";
-            // if (!input.value.endsWith("index.m3u8")) {
-            //   url = input.value + "index.m3u8";
-            // }
-
-            hls.loadSource(input.value);
-            hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-              console.log(
-                "manifest loaded, found " + data.levels.length +
-                  " quality level",
-              );
-            });
-          });
-        });
-
-        pause.addEventListener("click", function () {
-          hls.detachMedia(video);
-        });
-      }
-    </script>
   </body>
 </html>
