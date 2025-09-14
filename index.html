@@ -7,7 +7,148 @@
     <!-- 引入 hls.js 库，这是播放 m3u8 的核心 -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <!-- 引入我们自己的 CSS 样式文件 -->
-    <link rel="stylesheet" href="styles.css">
+    <style>
+      /* 全局样式和字体设置 */
+      :root {
+        --primary-color: #007bff;
+        --primary-hover-color: #0056b3;
+        --background-color: #121212;
+        --surface-color: #1e1e1e;
+        --text-color: #e0e0e0;
+        --border-color: #333;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      /* 主容器 */
+      .container {
+        width: 100%;
+        max-width: 800px;
+        background-color: var(--surface-color);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+
+      .subtitle {
+        color: #aaa;
+        margin-bottom: 30px;
+      }
+
+      /* 输入区域 */
+      .input-section {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+      }
+
+      #m3u8-url {
+        flex-grow: 1;
+        padding: 12px 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background-color: #2c2c2c;
+        color: var(--text-color);
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+
+      #m3u8-url:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+      }
+
+      /* 按钮通用样式 */
+      button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+        transition: background-color 0.3s, transform 0.1s;
+      }
+
+      button:active {
+        transform: scale(0.98);
+      }
+
+      #play-btn {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      #play-btn:hover {
+        background-color: var(--primary-hover-color);
+      }
+
+      /* 播放器容器 */
+      .player-wrapper {
+        position: relative;
+        width: 100%;
+        /* 保持16:9的宽高比 */
+        aspect-ratio: 16 / 9;
+        background-color: #000;
+        border-radius: 8px;
+        overflow: hidden;
+        /* 确保video元素不会超出圆角 */
+      }
+
+      #video-player {
+        width: 100%;
+        height: 100%;
+        display: block;
+        /* 移除video元素下方的微小空隙 */
+      }
+
+      /* 关闭按钮 */
+      #close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        background-color: rgba(30, 30, 30, 0.7);
+        color: white;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        line-height: 1;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      #close-btn:hover {
+        background-color: rgba(255, 0, 0, 0.8);
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -30,6 +171,101 @@
     </div>
 
     <!-- 引入我们自己的 JavaScript 脚本文件 -->
-    <script src="script.js"></script>
+    <script>
+      // 等待文档加载完毕后执行
+      document.addEventListener("DOMContentLoaded", () => {
+        // 获取页面上的所有元素
+        const urlInput = document.getElementById("m3u8-url");
+        const playBtn = document.getElementById("play-btn");
+        const closeBtn = document.getElementById("close-btn");
+        const videoPlayer = document.getElementById("video-player");
+        const playerWrapper = document.getElementById("player-wrapper");
+
+        // 初始化一个 hls 实例变量
+        let hls = null;
+
+        // "播放" 按钮的点击事件
+        playBtn.addEventListener("click", playVideo);
+
+        // "关闭" 按钮的点击事件
+        closeBtn.addEventListener("click", closeVideo);
+
+        // 允许在输入框中按回车键来触发播放
+        urlInput.addEventListener("keyup", (event) => {
+          if (event.key === "Enter") {
+            playVideo();
+          }
+        });
+
+        /**
+         * 播放视频的函数
+         */
+        function playVideo() {
+          const m3u8Url = urlInput.value.trim();
+
+          // 检查URL是否为空
+          if (!m3u8Url) {
+            alert("请输入有效的 M3U8 链接！");
+            return;
+          }
+
+          // 销毁上一个 hls 实例（如果存在），以便播放新的视频流
+          if (hls) {
+            hls.destroy();
+          }
+
+          // 检查浏览器是否支持 HLS
+          if (Hls.isSupported()) {
+            // 创建新的 Hls 实例
+            hls = new Hls();
+            // 加载 m3u8 链接
+            hls.loadSource(m3u8Url);
+            // 将 Hls 实例附加到 video 元素上
+            hls.attachMedia(videoPlayer);
+            // 当清单解析成功后，自动播放视频
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+              videoPlayer.play();
+              console.log("视频开始播放");
+            });
+            // 监听错误事件
+            hls.on(Hls.Events.ERROR, (event, data) => {
+              if (data.fatal) {
+                console.error("发生致命错误:", data.type);
+                alert(`加载视频失败: ${data.details}`);
+              }
+            });
+          } // 对于原生支持 HLS 的设备（如 Safari）
+          else if (
+            videoPlayer.canPlayType("application/vnd.apple.mpegurl")
+          ) {
+            videoPlayer.src = m3u8Url;
+            videoPlayer.addEventListener("loadedmetadata", () => {
+              videoPlayer.play();
+              console.log("视频开始播放 (原生支持)");
+            });
+          } else {
+            alert("您的浏览器不支持 HLS 播放。");
+          }
+        }
+
+        /**
+         * 关闭视频的函数
+         */
+        function closeVideo() {
+          // 暂停视频
+          videoPlayer.pause();
+          // 清空视频源
+          videoPlayer.src = "";
+
+          // 如果存在 hls 实例，销毁它以释放资源
+          if (hls) {
+            hls.destroy();
+            hls = null; // 将实例设为 null
+          }
+
+          console.log("视频已关闭");
+        }
+      });
+    </script>
   </body>
 </html>
