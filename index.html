@@ -1,48 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>nihao </title>
-    <meta name="description" content="nihao"/>
-    <link
-      rel="preload"
-      href="https://demo-styles.deno.deno.net/fonts/Moranga-Regular.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="https://demo-styles.deno.deno.net/fonts/Moranga-Medium.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="https://demo-styles.deno.deno.net/fonts/Recursive_Variable.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link rel="stylesheet" href="https://demo-styles.deno.deno.net/styles.css">
-    <style>
-      video {
-        width: 100%;
-        margin-top: 1.4em;
-      }
-    </style>
+    <title>M3U8 在线播放器</title>
+    <!-- 引入 hls.js 库，这是播放 m3u8 的核心 -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- 引入我们自己的 CSS 样式文件 -->
+    <link rel="stylesheet" href="styles.css">
   </head>
-
   <body>
-    <main>
-      <section>
-        <h2 style="font-weight: 56px;">社会主义核心价值观</h2>
-        <p style="font-size: 24px;">
-          富强、民主、文明、和谐、自由、平等、公正、法治、爱国、敬业、诚信、友善
-        </p>
-      </section>
-    </main>
+    <div class="container">
+      <h1>M3U8 在线播放器</h1>
+      <p class="subtitle">一个简洁、轻量的 HLS 流媒体播放工具</p>
+
+      <!-- 输入和播放控制区域 -->
+      <div class="input-section">
+        <input type="text" id="m3u8-url" placeholder="在此处粘贴 M3U8 链接...">
+        <button id="play-btn">▶ 播放</button>
+      </div>
+
+      <!-- 视频播放器容器 -->
+      <div class="player-wrapper" id="player-wrapper">
+        <!-- 关闭按钮 -->
+        <button id="close-btn" title="关闭视频">&times;</button>
+        <!-- HTML5 video 元素 -->
+        <video id="video-player" controls></video>
+      </div>
+    </div>
+
+    <!-- 引入我们自己的 JavaScript 脚本文件 -->
+    <script src="script.js"></script>
   </body>
 </html>
